@@ -79,6 +79,7 @@ services:
     depends_on:
       - elasticsearch01
       - elasticsearch02
+      - elasticsearch03
 
   web_server:
     build:
