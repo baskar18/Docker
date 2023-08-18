@@ -5,13 +5,12 @@ services:
     build:
       context: elasticsearch/
       args:
-        ELK_VERSION: ${ELK_VERSION:-7.10.1}
+        ELK_VERSION: 8.9.0
     volumes:
       - type: bind
         source: ./elasticsearch/elasticsearch.yml
         target: /usr/share/elasticsearch/config/elasticsearch.yml
         read_only: true
-      #- ${ELASTICSEARCH_DATA:-/data}/elasticsearch01:/usr/share/elasticsearch/data
     ports:
       - "9200:9200"
       - "9300:9300"
@@ -20,7 +19,6 @@ services:
       - discovery.seed_hosts=elasticsearch02
       - cluster.initial_master_nodes=elasticsearch01,elasticsearch02
       - bootstrap.memory_lock=true
-      #- "ES_JAVA_OPTS=-Xms${ES_HEAP_SIZE:-2g} -Xmx${ES_HEAP_SIZE:-2g}"
     ulimits:
       memlock:
         soft: -1
@@ -30,19 +28,37 @@ services:
     build:
       context: elasticsearch/
       args:
-        ELK_VERSION: ${ELK_VERSION:-7.10.1}
+        ELK_VERSION: 8.9.0
     volumes:
       - type: bind
         source: ./elasticsearch/elasticsearch.yml
         target: /usr/share/elasticsearch/config/elasticsearch.yml
         read_only: true
-      #- ${ELASTICSEARCH_DATA:-/data}/elasticsearch02:/usr/share/elasticsearch/data
     environment:
       - node.name=elasticsearch02
       - discovery.seed_hosts=elasticsearch01
       - cluster.initial_master_nodes=elasticsearch01,elasticsearch02
       - bootstrap.memory_lock=true
-      #- "ES_JAVA_OPTS=-Xms${ES_HEAP_SIZE:-2g} -Xmx${ES_HEAP_SIZE:-2g}"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+
+  elasticsearch03:
+    build:
+      context: elasticsearch/
+      args:
+        ELK_VERSION: 8.9.0
+    volumes:
+      - type: bind
+        source: ./elasticsearch/elasticsearch.yml
+        target: /usr/share/elasticsearch/config/elasticsearch.yml
+        read_only: true
+    environment:
+      - node.name=elasticsearch03
+      - discovery.seed_hosts=elasticsearch01,elasticsearch02
+      - cluster.initial_master_nodes=elasticsearch01,elasticsearch02,elasticsearch03
+      - bootstrap.memory_lock=true
     ulimits:
       memlock:
         soft: -1
@@ -52,7 +68,7 @@ services:
     build:
       context: kibana/
       args:
-        ELK_VERSION: ${ELK_VERSION:-7.10.1}
+        ELK_VERSION: 8.9.0
     volumes:
       - type: bind
         source: ./kibana/kibana.yml
